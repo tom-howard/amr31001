@@ -8,7 +8,7 @@ from tf.transformations import euler_from_quaternion
 from math import degrees
 import numpy as np
 
-class Motion(object):
+class Motion():
     def __init__(self):
         self.publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self.publisher_rate = rospy.Rate(10) # Hz
@@ -26,7 +26,7 @@ class Motion(object):
     def publish(self):
         self.publisher.publish(self.vel_cmd)
 
-class Pose(object):
+class Pose():
     def odom_cb(self, odom_data: Odometry):
         orientation = odom_data.pose.pose.orientation
         position = odom_data.pose.pose.position
@@ -50,17 +50,46 @@ class Pose(object):
         value = int(value * (10**precision))
         return float(value) / (10**precision)
 
-class Lidar(object):
-    def laserscan_cb(self, scan_data):
-        left_arc = scan_data.ranges[0:21]
-        right_arc = scan_data.ranges[-20:]
-        front_arc = np.array(left_arc[::-1] + right_arc[::-1])
+class Lidar():
+    
+    class scanSubsets():
+        def __init__(self):
+            self.front = 0.0
+            self.r1 = 0.0
+            self.r2 = 0.0
+            self.l1 = 0.0
+            self.l2 = 0.0
         
-        self.min_distance = front_arc.min()
-        arc_angles = np.arange(-20, 21)
-        self.closest_object_position = arc_angles[np.argmin(front_arc)]
+        def readings(self):
+            print(f"{self.l2:.3f}m, {self.l1:.3f}m, {self.front:.3f}m, {self.r1:.3f}m, {self.r2:.3f}m.")
+                        
+    def laserscan_cb(self, scan_data: LaserScan):
+        # front:
+        left_arc = scan_data.ranges[0:20+1]
+        right_arc = scan_data.ranges[-20:]
+        full_arc = np.array(left_arc[::-1] + right_arc[::-1])
+        
+        self.distance.front = full_arc[full_arc>0.1].min()
+        
+        # right subsets:
+        range = np.array(scan_data.ranges[320:340+1])
+        self.distance.r1 = range[range>0.1].min()
+        range = np.array(scan_data.ranges[300:320+1])
+        self.distance.r2 = range[range>0.1].min()
+
+        # left subsets:
+        range = np.array(scan_data.ranges[20:40+1])
+        self.distance.l1 = range[range>0.1].min()
+        range = np.array(scan_data.ranges[40:60+1])
+        self.distance.l2 = range[range>0.1].min()
+        
+        self.wait_for_readings = False
 
     def __init__(self):
-        self.min_distance = 0.0
-        self.closest_object_position = 0.0 # degrees
-        self.subscriber = rospy.Subscriber('/scan', LaserScan, self.laserscan_cb) 
+        self.distance = self.scanSubsets()
+        self.subscriber = rospy.Subscriber('/scan', LaserScan, self.laserscan_cb)
+        self.wait_for_readings = True
+        while self.wait_for_readings:
+            continue
+        print('LiDAR Data is available...')
+
