@@ -71,14 +71,14 @@ class Lidar():
         def min_of_subset(start_index, stop_index):
             range = np.array(scan_data.ranges[start_index: stop_index+1])
             valid_data = range[range>0.1]
-            return valid_data.min() if np.shape(valid_data)[0] > 0 else np.nan
+            return valid_data.mean() if np.shape(valid_data)[0] > 0 else np.nan
 
         # front:
         left_arc = scan_data.ranges[0:20+1]
         right_arc = scan_data.ranges[-20:]
         full_arc = np.array(left_arc[::-1] + right_arc[::-1])
         valid = full_arc[full_arc>0.1]
-        self.distance.front = valid.min() if np.shape(valid)[0] > 0 else np.nan
+        self.distance.front = valid.mean() if np.shape(valid)[0] > 0 else np.nan
         
         # right subsets:
         self.distance.r1 = min_of_subset(320, 340)
