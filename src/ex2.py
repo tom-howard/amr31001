@@ -21,7 +21,7 @@ while not rospy.is_shutdown():
     lin_vel = 0.05
 
     diff = lidar.distance.l3 - lidar.distance.l4
-    print(diff)
+    print(lidar.distance)
 
     if abs(diff) < 0.001:
         print("straight")

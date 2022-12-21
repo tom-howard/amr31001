@@ -64,6 +64,12 @@ class Lidar():
                 f"{self.r1:.3f}m, {self.r2:.3f}m, {self.r3:.3f}m, {self.r4:.3f}m."
                         
     def laserscan_cb(self, scan_data: LaserScan):
+
+        def min_of_subset(start_index, stop_index):
+            range = np.array(scan_data.ranges[start_index: stop_index+1])
+            valid_data = range[range>0.1]
+            return valid_data.min() if np.shape(valid_data)[0] > 0 else np.nan
+
         # front:
         left_arc = scan_data.ranges[0:20+1]
         right_arc = scan_data.ranges[-20:]
@@ -72,38 +78,16 @@ class Lidar():
         self.distance.front = valid.min() if np.shape(valid)[0] > 0 else np.nan
         
         # right subsets:
-        range = np.array(scan_data.ranges[320:340+1])
-        valid = range[range>0.1]
-        self.distance.r1 = valid.min() if np.shape(valid)[0] > 0 else np.nan
+        self.distance.r1 = min_of_subset(320, 340)
+        self.distance.r2 = min_of_subset(300, 320)
+        self.distance.r3 = min_of_subset(275, 290)
+        self.distance.r4 = min_of_subset(255, 270)
         
-        range = np.array(scan_data.ranges[300:320+1])
-        valid = range[range>0.1]
-        self.distance.r2 = valid.min() if np.shape(valid)[0] > 0 else np.nan
-        
-        range = np.array(scan_data.ranges[275:290+1])
-        valid = range[range>0.1]
-        self.distance.r3 = valid.min() if np.shape(valid)[0] > 0 else np.nan
-
-        range = np.array(scan_data.ranges[255:270+1])
-        valid = range[range>0.1]
-        self.distance.r4 = valid.min() if np.shape(valid)[0] > 0 else np.nan
-
         # left subsets:
-        range = np.array(scan_data.ranges[20:40+1])
-        valid = range[range>0.1]
-        self.distance.l1 = valid.min() if np.shape(valid)[0] > 0 else np.nan
-
-        range = np.array(scan_data.ranges[40:60+1])
-        valid = range[range>0.1]
-        self.distance.l2 = valid.min() if np.shape(valid)[0] > 0 else np.nan
-
-        range = np.array(scan_data.ranges[70:85+1])
-        valid = range[range>0.1]
-        self.distance.l3 = valid.min() if np.shape(valid)[0] > 0 else np.nan
-
-        range = np.array(scan_data.ranges[95:110+1])
-        valid = range[range>0.1]
-        self.distance.l4 = valid.min() if np.shape(valid)[0] > 0 else np.nan
+        self.distance.l1 = min_of_subset(20, 40)
+        self.distance.l2 = min_of_subset(40, 60)
+        self.distance.l3 = min_of_subset(70, 85)
+        self.distance.l4 = min_of_subset(95, 110)
         
         self.wait_for_readings = False
 
