@@ -23,13 +23,20 @@ while not rospy.is_shutdown():
     diff = lidar.distance.l3 - lidar.distance.l4
     print(lidar.distance)
 
-    if abs(diff) < 0.001:
+    if (lidar.distance.front < 0.3) or (lidar.distance.l1 < 0.4):
+        lin_vel = 0.0
+        ang_vel = -0.3
+        print("turning to avoid collision up ahead...")
+    elif (lidar.distance.l3 > 0.6):
+        print("lost sight of the wall, turning left...")
+        lin_vel = 0.0
+        ang_vel = 0.3
+    elif abs(diff) < 0.001:
         print("straight")
         ang_vel = 0.0
     elif diff < 0:
         print("turn right")
         ang_vel = -0.2 if lidar.distance.l3 > 0.2 else -0.4
-        motion.move_at_velocity(angular=-0.2)
     else:
         print("turn left")
         ang_vel = 0.2 if lidar.distance.l4 < 0.2 else 0.4
