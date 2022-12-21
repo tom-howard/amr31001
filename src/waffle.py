@@ -59,9 +59,12 @@ class Lidar():
             self.l1 = 0.0; self.l2 = 0.0; self.l3 = 0.0; self.l4 = 0.0
         
         def __str__(self):
-            return f"{self.l4:.3f}m, {self.l3:.3f}m, {self.l2:.3f}m, {self.l1:.3f}m, " \
-                f"{self.front:.3f}m, " \
-                f"{self.r1:.3f}m, {self.r2:.3f}m, {self.r3:.3f}m, {self.r4:.3f}m."
+            msg = f"              l1     front     r1          \n" \
+                  f"       l2     {self.l1:.3f}  {self.front:.3f}  {self.r1:.3f}     r2       \n" \
+                  f"l3     {self.l2:.3f}                       {self.r2:.3f}   r3\n" \
+                  f"{self.l3:.3f}                                   {self.r3:.3f}\n" \
+                  f"{self.l4:.3f} <-- l4                     r4 --> {self.r4:.3f}"
+            return msg
                         
     def laserscan_cb(self, scan_data: LaserScan):
 
