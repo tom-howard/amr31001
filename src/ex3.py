@@ -19,7 +19,7 @@ rl = roslaunch.scriptapi.ROSLaunch()
 rl.start()
 
 time = rospy.get_time()
-while (rospy.get_time() - time) < 10:
+while (rospy.get_time() - time) < 5:
     continue
 rospy.loginfo(f"{node_name}: Initialised.")
 
@@ -31,7 +31,7 @@ while not rospy.is_shutdown():
         roslaunch.core.Node(
             package="map_server",
             node_type="map_saver",
-            args=f"-f {map_path}"
+            args=f"-f {map_file}"
         )
     )
     
