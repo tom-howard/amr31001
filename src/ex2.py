@@ -4,7 +4,7 @@ import rospy
 import waffle
 from math import sqrt
 
-node_name = "odom_based_motion"
+node_name = "odom_based_navigation"
 
 movement = "turn" # "move_fwd"
 transition = True
