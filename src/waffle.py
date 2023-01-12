@@ -55,7 +55,7 @@ class Pose():
     def print(self):
         if rospy.get_time() - self.timestamp > 1:
             self.timestamp = rospy.get_time()
-            print(f"x = {self.posx:.3f} (m) y = {self.posy:.3f} (m), yaw = {self.yaw:.1f} (degrees)")
+            print(f"posx = {self.posx:.3f} (m) posy = {self.posy:.3f} (m), yaw = {self.yaw:.1f} (degrees)")
 
     def round(self, value, precision):
         value = int(value * (10**precision))
