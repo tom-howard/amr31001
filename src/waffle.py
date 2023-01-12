@@ -15,10 +15,15 @@ class Motion():
         self.vel_cmd = Twist()
 
     def move_at_velocity(self, linear = 0.0, angular = 0.0):
-        self.vel_cmd.linear.x = linear
-        self.vel_cmd.angular.z = angular
-        self.publish()
-    
+        if abs(linear) > 0.26 or abs(angular) > 1.82:
+            print(f"Requested velocity cannot be achieved!")
+            print(f" * LINEAR velocity request: {linear} (m/s) [limit = +/-0.26 (m/s)].")
+            print(f" * ANGULAR velocity request: {angular} (rad/s) [limit = +/-1.82 (rad/s)].")
+        else:
+            self.vel_cmd.linear.x = linear
+            self.vel_cmd.angular.z = angular
+            self.publish()
+        
     def stop(self):
         self.move_at_velocity()
         self.publish()
