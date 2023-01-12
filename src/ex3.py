@@ -10,7 +10,6 @@ rate = rospy.Rate(2) # hz
 rospy.loginfo(f"{node_name}: Initialised.")
 
 motion = waffle.Motion()
-pose = waffle.Pose()
 lidar = waffle.Lidar()
 
 lin_vel = 0.0
@@ -20,7 +19,7 @@ while not rospy.is_shutdown():
 
     lin_vel = 0.1
 
-    diff = lidar.distance.l3 - lidar.distance.l4
+    wall_rate = lidar.distance.l3 - lidar.distance.l4
     print(lidar.distance)
 
     if (lidar.distance.front < 0.3) or (lidar.distance.l1 < 0.4):
@@ -31,10 +30,10 @@ while not rospy.is_shutdown():
         print("lost sight of the wall, turning left...")
         lin_vel = 0.0
         ang_vel = 0.3
-    elif abs(diff) < 0.001:
+    elif abs(wall_rate) < 0.001:
         print("straight")
         ang_vel = 0.0
-    elif diff < 0:
+    elif wall_rate < 0:
         print("turn right")
         ang_vel = -0.2 if lidar.distance.l3 > 0.2 else -0.4
     else:
