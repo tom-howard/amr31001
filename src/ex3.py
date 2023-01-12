@@ -1,41 +1,46 @@
 #!/usr/bin/env python3
 
 import rospy
-import roslaunch
-import rospkg
-from pathlib import Path
+import waffle
 
-node_name = "ex3_map_saver"
+node_name = "wall_detection"
 
-rospy.init_node(node_name)
-rate = rospy.Rate(1/5) # one cycle per 5 seconds
-
-pkg_path = rospkg.RosPack().get_path('amr31001')
-map_path = Path(pkg_path).joinpath("maps")
-map_path.mkdir(exist_ok=True)
-map_file = map_path.joinpath('my_map')
-
-rl = roslaunch.scriptapi.ROSLaunch()
-rl.start()
-
-time = rospy.get_time()
-while (rospy.get_time() - time) < 5:
-    continue
+rospy.init_node(node_name, anonymous=True)
+rate = rospy.Rate(2) # hz
 rospy.loginfo(f"{node_name}: Initialised.")
+
+motion = waffle.Motion()
+pose = waffle.Pose()
+lidar = waffle.Lidar()
+
+lin_vel = 0.0
+ang_vel = 0.0
 
 while not rospy.is_shutdown():
 
-    rospy.loginfo(f"Saving map to: '{map_file}'")
+    lin_vel = 0.1
 
-    rl.launch(
-        roslaunch.core.Node(
-            package="map_server",
-            node_type="map_saver",
-            args=f"-f {map_file}"
-        )
-    )
+    diff = lidar.distance.l3 - lidar.distance.l4
+    print(lidar.distance)
+
+    if (lidar.distance.front < 0.3) or (lidar.distance.l1 < 0.4):
+        lin_vel = 0.0
+        ang_vel = -0.3
+        print("turning to avoid collision up ahead...")
+    elif (lidar.distance.l3 > 0.6):
+        print("lost sight of the wall, turning left...")
+        lin_vel = 0.0
+        ang_vel = 0.3
+    elif abs(diff) < 0.001:
+        print("straight")
+        ang_vel = 0.0
+    elif diff < 0:
+        print("turn right")
+        ang_vel = -0.2 if lidar.distance.l3 > 0.2 else -0.4
+    else:
+        print("turn left")
+        ang_vel = 0.2 if lidar.distance.l4 < 0.2 else 0.4
     
-    try:
-        rate.sleep()
-    except rospy.ROSInterruptException:
-        pass
+    motion.move_at_velocity(linear=lin_vel, angular=ang_vel)
+    rate.sleep()
+    
