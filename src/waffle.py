@@ -45,7 +45,13 @@ class Pose():
         self.yaw = 0.0
         self.yaw_direction = 0.0
         self.subscriber = rospy.Subscriber('/odom', Odometry, self.odom_cb)
+        self.timestamp = rospy.get_time()
     
+    def print(self):
+        if rospy.get_time() - self.timestamp > 1:
+            self.timestamp = rospy.get_time()
+            print(f"x = {self.posx:.3f} (m) y = {self.posy:.3f} (m), yaw = {self.yaw:.1f} (degrees)")
+
     def round(self, value, precision):
         value = int(value * (10**precision))
         return float(value) / (10**precision)

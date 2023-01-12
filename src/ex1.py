@@ -17,7 +17,8 @@ motion = waffle.Motion()
 pose = waffle.Pose()
 
 while not rospy.is_shutdown():
-    
+
+    pose.print()
     if transition:
         motion.stop()
         yaw_ref = pose.yaw
