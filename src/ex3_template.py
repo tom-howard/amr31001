@@ -3,7 +3,7 @@
 import rospy
 import waffle
 
-node_name = "wall_detection"
+node_name = "wall_follower"
 
 rospy.init_node(node_name, anonymous=True)
 rate = rospy.Rate(2) # hz
