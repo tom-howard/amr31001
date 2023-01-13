@@ -100,7 +100,7 @@ class Lidar():
         self.distance.r1 = min_of_subset(320, 340)
         self.distance.r2 = min_of_subset(300, 320)
         self.distance.r3 = min_of_subset(275, 290)
-        self.distance.r4 = min_of_subset(255, 270)
+        self.distance.r4 = min_of_subset(250, 265)
         
         # left subsets:
         self.distance.l1 = min_of_subset(20, 40)
