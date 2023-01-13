@@ -16,14 +16,14 @@ class Motion():
 
     def move_at_velocity(self, linear = 0.0, angular = 0.0):
         if abs(linear) > 0.26:
-            print("Requested LINEAR velocity cannot be achieved!")
-            print(f" * Velocity limit = +/-0.26 (m/s).")
+            lin_org = linear
             linear = np.sign(linear) * 0.26
-        
+            print(f"LINEAR velocity limited to {linear} m/s ({lin_org} m/s was requested).")
+
         if abs(angular) > 1.82:
-            print(f"Requested ANGULAR velocity cannot be achieved!")
-            print(f" * Velocity limit = +/-1.82 (rad/s).")
+            ang_org = angular
             angular = np.sign(angular) * 1.82
+            print(f"ANGULAR velocity limited to {angular} rad/s ({ang_org} rad/s was requested).")
         
         self.vel_cmd.linear.x = linear
         self.vel_cmd.angular.z = angular
