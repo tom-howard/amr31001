@@ -32,18 +32,17 @@ while not rospy.is_shutdown():
         # turn by 90 degrees
         current_yaw = current_yaw + abs(pose.yaw - yaw_ref)
         yaw_ref = pose.yaw
-        if current_yaw > 90:
+        if current_yaw > 45:
             movement = "move_fwd"
             transition = True
         else:
             motion.move_at_velocity(linear=0, angular=0.2)
     elif movement == "move_fwd":
-        current_distance = current_distance + sqrt((pose.posx-xpos_ref)**2 + (pose.posy-ypos_ref)**2)
+        current_distance = 0.0
         xpos_ref = pose.posx
         ypos_ref = pose.posy
-        if current_distance > 0.5:
-            movement = "turn"
-            transition = True
-        else:
-            motion.move_at_velocity(linear=0.2, angular=0.0)
+        
+        movement = "turn"
+        transition = True
+    
     rate.sleep()
