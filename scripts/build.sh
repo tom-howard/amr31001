@@ -1,4 +1,4 @@
-!/usr/bin/env bash
+#!/usr/bin/env bash
 
 rm -rf ~/catkin_ws/src/amr31001/
 cd ~/catkin_ws/src/
