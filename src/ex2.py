@@ -41,8 +41,6 @@ while not rospy.is_shutdown():
         current_distance = 0.0
         xpos_ref = pose.posx
         ypos_ref = pose.posy
-        
-        movement = "turn"
-        transition = True
+        # add some code here!    
     
     rate.sleep()
