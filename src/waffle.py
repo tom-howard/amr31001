@@ -48,6 +48,8 @@ class Pose():
         self.yaw = abs(yaw)
         self.posx = self.round(position.x, 4)
         self.posy = self.round(position.y, 4)
+
+        self.wait_for_odom = False
     
     def __init__(self):
         self.posx = 0.0
@@ -56,6 +58,9 @@ class Pose():
         self.yaw_direction = 0.0
         self.subscriber = rospy.Subscriber('/odom', Odometry, self.odom_cb)
         self.timestamp = rospy.get_time()
+        self.wait_for_odom = True
+        while self.wait_for_odom:
+            continue
     
     def print(self):
         if rospy.get_time() - self.timestamp > 1:
