@@ -113,13 +113,13 @@ class Lidar():
         self.distance.l3 = min_of_subset(70, 85)
         self.distance.l4 = min_of_subset(95, 110)
         
-        self.wait_for_readings = False
+        self.wait_for_lidar = False
 
     def __init__(self):
         self.distance = self.scanSubsets()
         self.subscriber = rospy.Subscriber('/scan', LaserScan, self.laserscan_cb)
-        self.wait_for_readings = True
-        while self.wait_for_readings:
+        self.wait_for_lidar = True
+        while self.wait_for_lidar:
             continue
         print('LiDAR Data is available...')
 
