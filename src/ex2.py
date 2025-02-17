@@ -38,9 +38,9 @@ while not rospy.is_shutdown():
         else:
             motion.move_at_velocity(linear=0, angular=0.2)
     elif movement == "move_fwd":
+        # edit/add some more code here... 
         current_distance = 0.0
         xpos_ref = pose.posx
-        ypos_ref = pose.posy
-        # add some code here!    
+        ypos_ref = pose.posy   
     
     rate.sleep()
