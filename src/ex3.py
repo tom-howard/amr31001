@@ -27,10 +27,10 @@ while not rospy.is_shutdown():
         movement = "go straight"
         ang_vel = 0.0
     elif wall_rate < 0:
-        movement = "turn left"
+        movement = "turn left/right?"
         ang_vel = 0.0
     else:
-        movement = "turn right"
+        movement = "turn left/right?"
         ang_vel = 0.0
     
     print(f"{wall_rate=:.3f}")
