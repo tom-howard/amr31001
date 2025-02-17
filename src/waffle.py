@@ -59,8 +59,10 @@ class Pose():
         self.subscriber = rospy.Subscriber('/odom', Odometry, self.odom_cb)
         self.timestamp = rospy.get_time()
         self.wait_for_odom = True
+        print('Waiting for Odometry...')
         while self.wait_for_odom:
             continue
+        print('Odometry is ready.')
     
     def print(self):
         if rospy.get_time() - self.timestamp > 1:
@@ -119,7 +121,8 @@ class Lidar():
         self.distance = self.scanSubsets()
         self.subscriber = rospy.Subscriber('/scan', LaserScan, self.laserscan_cb)
         self.wait_for_lidar = True
+        print('Waiting for LiDAR...')
         while self.wait_for_lidar:
             continue
-        print('LiDAR Data is available...')
+        print('LiDAR is ready.')
 
