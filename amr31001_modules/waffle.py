@@ -1,40 +1,65 @@
 #!/usr/bin/env python3
 
-import rospy
+# not currently working
+
+import rclpy
+from rclpy.node import Node
+
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-from tf.transformations import euler_from_quaternion
+
+from tb3_tools import euler_from_quaternion
+
 from math import degrees
 import numpy as np
 
-class Motion():
+class Waffle(Node):
     def __init__(self):
-        self.publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-        self.publisher_rate = rospy.Rate(10) # Hz
-        self.vel_cmd = Twist()
+        super().__init__('waffle')
+        self.motion = Motion()
+        self.pose = Pose()
+        self.lidar = Lidar()
 
-    def move_at_velocity(self, linear = 0.0, angular = 0.0):
-        if abs(linear) > 0.26:
-            lin_org = linear
-            linear = np.sign(linear) * 0.26
-            print(f"LINEAR velocity limited to {linear} m/s ({lin_org} m/s was requested).")
+        self.get_logger().info('Waffle node started.')
 
-        if abs(angular) > 1.82:
-            ang_org = angular
-            angular = np.sign(angular) * 1.82
-            print(f"ANGULAR velocity limited to {angular} rad/s ({ang_org} rad/s was requested).")
-        
-        self.vel_cmd.linear.x = linear
-        self.vel_cmd.angular.z = angular
-        self.publish()
-        
-    def stop(self):
-        self.move_at_velocity()
-        self.publish()
+    def run(self):
+        while rclpy.ok():
+            rclpy.spin_once(self)
+            self.pose.print()
+            self.lidar.distance.front
+            print(self.lidar.distance)
+            self.get_logger().info('---')
 
-    def publish(self):
-        self.publisher.publish(self.vel_cmd)
+
+    class Motion():
+        def __init__(self):
+            self.publisher = super().create_publisher(
+                Twist, '/cmd_vel', 10
+            )
+            self.vel_cmd = Twist()
+
+        def move_at_velocity(self, linear = 0.0, angular = 0.0):
+            if abs(linear) > 0.26:
+                lin_org = linear
+                linear = np.sign(linear) * 0.26
+                super(f"LINEAR velocity limited to {linear} m/s ({lin_org} m/s was requested).")
+
+            if abs(angular) > 1.82:
+                ang_org = angular
+                angular = np.sign(angular) * 1.82
+                print(f"ANGULAR velocity limited to {angular} rad/s ({ang_org} rad/s was requested).")
+            
+            self.vel_cmd.linear.x = linear
+            self.vel_cmd.angular.z = angular
+            self.publish()
+            
+        def stop(self):
+            self.move_at_velocity()
+            self.publish()
+
+        def publish(self):
+            self.publisher.publish(self.vel_cmd)
 
 class Pose():
     def odom_cb(self, odom_data: Odometry):
