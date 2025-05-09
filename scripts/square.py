@@ -1,39 +1,50 @@
 #!/usr/bin/env python3
 
 import rclpy
-from rclpy.signals import SignalHandlerOptions
-
 from geometry_msgs.msg import Twist
+from amr31001_modules import waffle
+from math import sqrt, pow, pi 
 
-def main(args=None):
-    rclpy.init(args=args,
-        signal_handler_options=SignalHandlerOptions.NO)
-    node = rclpy.create_node('square')
-    publisher = node.create_publisher(Twist, '/cmd_vel', 10)
-    rate = node.create_rate(10)  # 10 Hz
+node = waffle.create_node('square')
+publisher = node.create_publisher(Twist, '/cmd_vel', 10)
+rate = node.create_rate(10, node.get_clock())  # 10 Hz
+velocity_msg = Twist()
 
-    msg = Twist()
-    msg.linear.x = 0.2  # Move forward at 0.2 m/s
-    msg.angular.z = 0.0  # No rotation
+def main():
+    movement = "fwd" # "fwd" or "turn"
+    transition = True
+    timestamp = waffle.get_time(node)
 
-    def stop():
-        msg.linear.x = 0.0
-        msg.angular.z = 0.0
-        for i in range(5):
-            publisher.publish(msg)
-        node.destroy_node()
-        rclpy.shutdown()
-    
-    try:
-        while rclpy.ok():
-            publisher.publish(msg)
-            rate.sleep()
-    except KeyboardInterrupt:
-        print("except...")
-        stop()
-    finally:
-        
-        print("finally...")
+    while rclpy.ok():
+        elapsed_time = waffle.get_time(node) - timestamp 
+        print(f"{elapsed_time}")
+        if transition: 
+            timestamp = waffle.get_time(node)
+            transition = False
+            velocity_msg.linear.x = 0.0
+            velocity_msg.angular.z = 0.0
+            print(f"Transitioning into state: {movement}")
+        elif movement == "fwd": 
+            if elapsed_time > 2:
+                movement = "turn"
+                transition = True
+            else:
+                velocity_msg.linear.x = 0.05
+                velocity_msg.angular.z = 0.0
+        elif movement == "turn": 
+            if elapsed_time > 4:
+                movement = "fwd"
+                transition = True
+            else:
+                velocity_msg.angular.z = 0.2
+                velocity_msg.linear.x = 0.0
+        publisher.publish(velocity_msg) 
+        rate.sleep()
 
-if __name__ == '__main__':
-    main()
+try:
+    main()    
+except KeyboardInterrupt:
+    print("\nCtrl+C detected. Stopping the robot...")
+    waffle.stop(node, publisher)
+finally:
+    print("Node stopped.")
